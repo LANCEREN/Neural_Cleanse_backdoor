@@ -18,7 +18,7 @@ sys.path.append("../")
 import utils_backdoor
 from injection_utils import *
 
-DATA_DIR = '../data'  # data folder
+DATA_DIR = '/mnt/data03/renge/public_dataset/image/gtsrb-data/h5file'  # data folder
 DATA_FILE = 'gtsrb_dataset.h5'  # dataset file
 
 TARGET_LS = [28]
@@ -117,9 +117,13 @@ class DataGenerator(object):
             cur_x = X[cur_idx]
             cur_y = Y[cur_idx]
 
+            # mlock
+            tgt = random.choice(self.target_ls)
+            cur_x_trigger, cur_y_backdoor = infect_X(cur_x, tgt)
             if inject_ptr < inject_ratio:
-                tgt = random.choice(self.target_ls)
-                cur_x, cur_y = infect_X(cur_x, tgt)
+                cur_x = cur_x_trigger
+            else:
+                cur_y = cur_y_backdoor
 
             batch_X.append(cur_x)
             batch_Y.append(cur_y)
